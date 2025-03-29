@@ -1,8 +1,12 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, ReactNode } from "react";
 import { LANGUAGES } from "../languages";
 import { useLocalization } from "../hooks/useLocalization";
 
-export function LanguageSelector() {
+interface LanguageSelectorProps {
+  buttonContent?: ReactNode;
+}
+
+export function LanguageSelector({ buttonContent }: LanguageSelectorProps) {
   const [showDropdown, setShowDropdown] = useState(false);
   const { setLanguage } = useLocalization();
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -29,12 +33,12 @@ export function LanguageSelector() {
       onClick={() => setShowDropdown(!showDropdown)}
       ref={dropdownRef}
     >
-      <button className="text-sm text-white/70 hover:text-white transition-colors">
-        Language
+      <button className="flex items-center justify-center">
+        {buttonContent || <span className="text-sm">Language</span>}
       </button>
 
       {showDropdown && (
-        <div className="absolute overflow-y-auto max-h-[205px] py-2 w-40 right-0 top-full mt-1 bg-gray-900 rounded-md shadow-lg">
+        <div className="absolute overflow-y-auto max-h-[205px] py-2 w-40 right-0 top-full mt-1 bg-gray-900 rounded-md shadow-lg z-50">
           {LANGUAGES.sort((a,b) => a.id.localeCompare(b.id)).map((language) => (
             <button
               key={language.id}

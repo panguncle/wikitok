@@ -1,16 +1,23 @@
 import { useEffect, useRef, useCallback, useState } from "react";
-import { WikiCard } from "./components/WikiCard";
-import { Loader2, Search, X, Download } from "lucide-react";
+import { Loader2, Search, X, Download, Sun, Moon, Laptop, Heart } from "lucide-react";
 import { Analytics } from "@vercel/analytics/react";
 import { LanguageSelector } from "./components/LanguageSelector";
 import { useLikedArticles } from "./contexts/LikedArticlesContext";
 import { useWikiArticles } from "./hooks/useWikiArticles";
+import { EnhancedWikiCard } from "./components/EnhancedWikiCard";
+import { SearchBar } from "./components/SearchBar";
+import { useTheme } from "./contexts/ThemeContext";
+import { Menu } from "@headlessui/react";
+import { motion, AnimatePresence } from "framer-motion";
 
 function App() {
-  const [showAbout, setShowAbout] = useState(false);
   const [showLikes, setShowLikes] = useState(false);
-  const { articles, loading, fetchArticles } = useWikiArticles();
-  const { likedArticles, toggleLike } = useLikedArticles();
+  const [showSearch, setShowSearch] = useState(false);
+  const [showRelated, setShowRelated] = useState(false);
+  const [selectedArticle, setSelectedArticle] = useState<any>(null);
+  const { articles, loading, fetchArticles, searchArticles, setArticles } = useWikiArticles();
+  const { likedArticles, toggleLike, isLiked } = useLikedArticles();
+  const { theme, setTheme, isDark } = useTheme();
   const observerTarget = useRef(null);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -41,6 +48,11 @@ function App() {
     fetchArticles();
   }, []);
 
+  const handleSearch = useCallback((query: string) => {
+    setArticles([]);  // Clear current articles
+    searchArticles(query);
+  }, [searchArticles]);
+
   const filteredLikedArticles = likedArticles.filter(
     (article) =>
       article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -69,96 +81,89 @@ function App() {
   };
 
   return (
-    <div className="h-screen w-full bg-black text-white overflow-y-scroll snap-y snap-mandatory hide-scroll">
-      <div className="fixed top-4 left-4 z-50">
+    <div className={`h-screen w-full ${isDark ? 'bg-black' : 'bg-white'} text-${isDark ? 'white' : 'black'} overflow-y-scroll snap-y snap-mandatory hide-scroll`}>
+      <div className="fixed top-4 left-4 z-50 flex items-center gap-4">
         <button
           onClick={() => window.location.reload()}
-          className="text-2xl font-bold text-white drop-shadow-lg hover:opacity-80 transition-opacity"
+          className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-black'} drop-shadow-lg hover:opacity-80 transition-opacity`}
         >
           WikiTok
         </button>
+        <button
+          onClick={() => setShowSearch(true)}
+          className={`px-3 py-1 rounded-full ${
+            isDark ? 'bg-white/10 hover:bg-white/20' : 'bg-black/10 hover:bg-black/20'
+          } text-sm transition-colors flex items-center gap-2`}
+        >
+          <Search className="w-4 h-4" />
+          Search
+        </button>
       </div>
 
-      <div className="fixed top-4 right-4 z-50 flex flex-col items-end gap-2">
-        <button
-          onClick={() => setShowAbout(!showAbout)}
-          className="text-sm text-white/70 hover:text-white transition-colors"
-        >
-          About
-        </button>
-        <button
-          onClick={() => setShowLikes(!showLikes)}
-          className="text-sm text-white/70 hover:text-white transition-colors"
-        >
-          Likes
-        </button>
-        <LanguageSelector />
-      </div>
+      <SearchBar
+        isOpen={showSearch}
+        onClose={() => setShowSearch(false)}
+        onSearch={handleSearch}
+      />
 
-      {showAbout && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-gray-900 z-[41] p-6 rounded-lg max-w-md relative">
-            <button
-              onClick={() => setShowAbout(false)}
-              className="absolute top-2 right-2 text-white/70 hover:text-white"
-            >
-              ✕
-            </button>
-            <h2 className="text-xl font-bold mb-4">About WikiTok</h2>
-            <p className="mb-4">
-              A TikTok-style interface for exploring random Wikipedia articles.
-            </p>
-            <p className="text-white/70">
-              Made with ❤️ by{" "}
-              <a
-                href="https://x.com/Aizkmusic"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-white hover:underline"
-              >
-                @Aizkmusic
-              </a>
-            </p>
-            <p className="text-white/70 mt-2">
-              Check out the code on{" "}
-              <a
-                href="https://github.com/IsaacGemal/wikitok"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-white hover:underline"
-              >
-                GitHub
-              </a>
-            </p>
-            <p className="text-white/70 mt-2">
-              If you enjoy this project, you can{" "}
-              <a
-                href="https://buymeacoffee.com/aizk"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-white hover:underline"
-              >
-                buy me a coffee
-              </a>
-              ! ☕
-            </p>
-          </div>
-          <div
-            className={`w-full h-full z-[40] top-1 left-1  bg-[rgb(28 25 23 / 43%)] fixed  ${showAbout ? "block" : "hidden"
-              }`}
-            onClick={() => setShowAbout(false)}
-          ></div>
+      {/* 右侧边栏 - 垂直布局，按钮合并在一起 */}
+      <div className="fixed right-4 top-1/2 -translate-y-1/2 z-50 flex flex-col items-center">
+        <div className={`w-12 h-12 rounded-t-full ${
+          isDark ? 'bg-black/70' : 'bg-white/90'
+        } backdrop-blur-md shadow-lg flex items-center justify-center transition-all hover:scale-110`}>
+          <LanguageSelector buttonContent={<span className="text-xs font-medium">Lang</span>} />
         </div>
-      )}
+
+        <button
+          onClick={() => selectedArticle && toggleLike(selectedArticle)}
+          className={`w-12 h-12 ${
+            isDark ? 'bg-black/70' : 'bg-white/90'
+          } backdrop-blur-md shadow-lg flex items-center justify-center transition-all hover:scale-110`}
+          aria-label="Like Current Article"
+          title="Like Current Article"
+        >
+          <Heart 
+            className={`w-5 h-5 ${selectedArticle && isLiked(selectedArticle.pageid) ? 'fill-current' : ''}`}
+          />
+        </button>
+
+        <button
+          onClick={() => setShowLikes(true)}
+          className={`w-12 h-12 rounded-b-full ${
+            isDark ? 'bg-black/70' : 'bg-white/90'
+          } backdrop-blur-md shadow-lg flex items-center justify-center transition-all hover:scale-110`}
+          aria-label="View Saved Articles"
+          title="View Saved Articles"
+        >
+          <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            width="20" 
+            height="20" 
+            viewBox="0 0 24 24" 
+            fill="none"
+            stroke="currentColor" 
+            strokeWidth="2" 
+            strokeLinecap="round" 
+            strokeLinejoin="round"
+          >
+            <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/>
+          </svg>
+        </button>
+      </div>
 
       {showLikes && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-gray-900 z-[41] p-6 rounded-lg w-full max-w-2xl h-[80vh] flex flex-col relative">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+        >
+          <div className={`${isDark ? 'bg-gray-900' : 'bg-white'} z-[41] p-6 rounded-lg w-full max-w-2xl h-[80vh] flex flex-col relative`}>
             <button
               onClick={() => setShowLikes(false)}
-              className="absolute top-2 right-2 text-white/70 hover:text-white"
+              className={`absolute top-2 right-2 ${isDark ? 'text-white/70 hover:text-white' : 'text-black/70 hover:text-black'}`}
             >
-              ✕
+              <X className="w-5 h-5" />
             </button>
 
             <div className="flex justify-between items-center mb-4">
@@ -166,7 +171,9 @@ function App() {
               {likedArticles.length > 0 && (
                 <button
                   onClick={handleExport}
-                  className="flex items-center gap-2 px-3 py-1.5 text-sm bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors"
+                  className={`flex items-center gap-2 px-3 py-1.5 text-sm ${
+                    isDark ? 'bg-gray-800 hover:bg-gray-700' : 'bg-gray-200 hover:bg-gray-300'
+                  } rounded-lg transition-colors`}
                   title="Export liked articles"
                 >
                   <Download className="w-4 h-4" />
@@ -181,14 +188,16 @@ function App() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search liked articles..."
-                className="w-full bg-gray-800 text-white px-4 py-2 pl-10 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className={`w-full ${
+                  isDark ? 'bg-gray-800 text-white' : 'bg-gray-100 text-black'
+                } px-4 py-2 pl-10 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500`}
               />
-              <Search className="w-5 h-5 text-white/50 absolute left-3 top-1/2 transform -translate-y-1/2" />
+              <Search className={`w-5 h-5 ${isDark ? 'text-white/50' : 'text-black/50'} absolute left-3 top-1/2 transform -translate-y-1/2`} />
             </div>
 
             <div className="flex-1 overflow-y-auto min-h-0">
               {filteredLikedArticles.length === 0 ? (
-                <p className="text-white/70">
+                <p className={isDark ? 'text-white/70' : 'text-black/70'}>
                   {searchQuery ? "No matches found." : "No liked articles yet."}
                 </p>
               ) : (
@@ -211,19 +220,21 @@ function App() {
                             href={article.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="font-bold hover:text-gray-200"
+                            className={`font-bold ${isDark ? 'hover:text-gray-200' : 'hover:text-gray-800'}`}
                           >
                             {article.title}
                           </a>
                           <button
                             onClick={() => toggleLike(article)}
-                            className="text-white/50 hover:text-white/90 p-1 rounded-full md:opacity-0 md:group-hover:opacity-100 transition-opacity"
+                            className={`${
+                              isDark ? 'text-white/50 hover:text-white/90' : 'text-black/50 hover:text-black/90'
+                            } p-1 rounded-full md:opacity-0 md:group-hover:opacity-100 transition-opacity`}
                             aria-label="Remove from likes"
                           >
                             <X className="w-4 h-4" />
                           </button>
                         </div>
-                        <p className="text-sm text-white/70 line-clamp-2">
+                        <p className={`text-sm ${isDark ? 'text-white/70' : 'text-black/70'} line-clamp-2`}>
                           {article.extract}
                         </p>
                       </div>
@@ -234,21 +245,104 @@ function App() {
             </div>
           </div>
           <div
-            className={`w-full h-full z-[40] top-1 left-1  bg-[rgb(28 25 23 / 43%)] fixed  ${showLikes ? "block" : "hidden"
-              }`}
+            className="w-full h-full z-[40] top-1 left-1 bg-[rgb(28 25 23 / 43%)] fixed"
             onClick={() => setShowLikes(false)}
-          ></div>
-        </div>
+          />
+        </motion.div>
       )}
 
-      {articles.map((article) => (
-        <WikiCard key={article.pageid} article={article} />
-      ))}
+      <AnimatePresence>
+        {articles.map((article) => (
+          <EnhancedWikiCard
+            key={article.pageid}
+            article={article}
+            onArticleInView={(article) => setSelectedArticle(article)}
+            onRelatedArticlesRequest={() => {
+              setSelectedArticle(article);
+              setShowRelated(true);
+            }}
+          />
+        ))}
+      </AnimatePresence>
+      
+      {showRelated && selectedArticle && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+        >
+          <div className={`${isDark ? 'bg-gray-900' : 'bg-white'} z-[41] p-6 rounded-lg w-full max-w-2xl h-[80vh] flex flex-col relative`}>
+            <button
+              onClick={() => setShowRelated(false)}
+              className={`absolute top-2 right-2 ${isDark ? 'text-white/70 hover:text-white' : 'text-black/70 hover:text-black'}`}
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <h2 className="text-xl font-bold mb-4">Related to "{selectedArticle.title}"</h2>
+
+            <div className="flex-1 overflow-y-auto min-h-0">
+              {selectedArticle.related && selectedArticle.related.length > 0 ? (
+                <div className="space-y-4">
+                  {selectedArticle.related.map((relatedArticle: any) => (
+                    <div
+                      key={`${relatedArticle.pageid}`}
+                      className="flex gap-4 items-start group"
+                    >
+                      {relatedArticle.thumbnail && (
+                        <img
+                          src={relatedArticle.thumbnail.source}
+                          alt={relatedArticle.title}
+                          className="w-20 h-20 object-cover rounded"
+                        />
+                      )}
+                      <div className="flex-1">
+                        <div className="flex justify-between items-start">
+                          <a
+                            href={relatedArticle.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={`font-bold ${isDark ? 'hover:text-gray-200' : 'hover:text-gray-800'}`}
+                          >
+                            {relatedArticle.title}
+                          </a>
+                          <button
+                            onClick={() => toggleLike(relatedArticle)}
+                            className={`${
+                              isDark ? 'text-white/50 hover:text-white/90' : 'text-black/50 hover:text-black/90'
+                            } p-1 rounded-full transition-opacity`}
+                            aria-label={isLiked(relatedArticle.pageid) ? "Remove from likes" : "Add to likes"}
+                          >
+                            <Heart className={`w-4 h-4 ${isLiked(relatedArticle.pageid) ? 'fill-current' : ''}`} />
+                          </button>
+                        </div>
+                        <p className={`text-sm ${isDark ? 'text-white/70' : 'text-black/70'} line-clamp-2`}>
+                          {relatedArticle.extract}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className={isDark ? 'text-white/70' : 'text-black/70'}>
+                  No related articles found.
+                </p>
+              )}
+            </div>
+          </div>
+          <div
+            className="w-full h-full z-[40] top-1 left-1 bg-[rgb(28 25 23 / 43%)] fixed"
+            onClick={() => setShowRelated(false)}
+          />
+        </motion.div>
+      )}
+      
       <div ref={observerTarget} className="h-10 -mt-1" />
       {loading && (
         <div className="h-screen w-full flex items-center justify-center gap-2">
           <Loader2 className="h-6 w-6 animate-spin" />
-          <span>Loading...</span>
+          <span>Loading more articles...</span>
         </div>
       )}
       <Analytics />
