@@ -1,0 +1,28 @@
+{
+  "app": {
+    "title": "WikiTok",
+    "search": {
+      "button": "Search",
+      "placeholder": "Search Wikipedia articles...",
+      "noResults": "No matches found."
+    },
+    "article": {
+      "readMore": "Read more",
+      "showLess": "Show less",
+      "viewOnWikipedia": "View on Wikipedia",
+      "showRelated": "Show Related Articles",
+      "noRelated": "No related articles found."
+    },
+    "likes": {
+      "title": "Saved Articles",
+      "empty": "No liked articles yet.",
+      "export": "Export",
+      "searchPlaceholder": "Search liked articles..."
+    },
+    "actions": {
+      "like": "Like Article",
+      "unlike": "Unlike Article",
+      "viewSaved": "View Saved Articles"
+    }
+  }
+} 

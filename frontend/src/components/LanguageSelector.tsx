@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, ReactNode } from "react";
 import { LANGUAGES } from "../languages";
-import { useLocalization } from "../hooks/useLocalization";
+import { useTranslation } from "react-i18next";
 
 interface LanguageSelectorProps {
   buttonContent?: ReactNode;
@@ -8,7 +8,7 @@ interface LanguageSelectorProps {
 
 export function LanguageSelector({ buttonContent }: LanguageSelectorProps) {
   const [showDropdown, setShowDropdown] = useState(false);
-  const { setLanguage } = useLocalization();
+  const { i18n } = useTranslation();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const handleClickOutside = (event: MouseEvent) => {
@@ -27,6 +27,11 @@ export function LanguageSelector({ buttonContent }: LanguageSelectorProps) {
     };
   }, []);
 
+  const handleLanguageChange = (langId: string) => {
+    i18n.changeLanguage(langId);
+    setShowDropdown(false);
+  };
+
   return (
     <div
       className="relative inline-flex items-center"
@@ -42,8 +47,10 @@ export function LanguageSelector({ buttonContent }: LanguageSelectorProps) {
           {LANGUAGES.sort((a,b) => a.id.localeCompare(b.id)).map((language) => (
             <button
               key={language.id}
-              onClick={() => setLanguage(language.id)}
-              className="w-full items-center flex gap-3 px-3 py-1 hover:bg-gray-800"
+              onClick={() => handleLanguageChange(language.id)}
+              className={`w-full items-center flex gap-3 px-3 py-1 hover:bg-gray-800 ${
+                i18n.language === language.id ? 'bg-gray-800' : ''
+              }`}
             >
               <img className="w-5" src={language.flag} alt={language.name} />
               <span className="text-xs">{language.name}</span>

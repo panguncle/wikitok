@@ -2,14 +2,55 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <title>WikiTok - Explore Wikipedia Articles in TikTok Style</title>
+    <meta name="description" content="WikiTok - A TikTok-style interface for exploring Wikipedia articles. Discover knowledge in an engaging, swipeable format with support for multiple languages." />
+    <meta name="keywords" content="wikitok, wikipedia, tiktok style, educational content, knowledge sharing, wiki articles, interactive learning" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://wikitok.cloud/" />
+    <meta property="og:title" content="WikiTok - Explore Wikipedia Articles in TikTok Style" />
+    <meta property="og:description" content="Discover Wikipedia articles in an engaging, TikTok-style format. Learn something new with every swipe!" />
+    <meta property="og:image" content="https://wikitok.cloud/og-image.jpg" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://wikitok.cloud/" />
+    <meta property="twitter:title" content="WikiTok - Explore Wikipedia Articles in TikTok Style" />
+    <meta property="twitter:description" content="Discover Wikipedia articles in an engaging, TikTok-style format. Learn something new with every swipe!" />
+    <meta property="twitter:image" content="https://wikitok.cloud/og-image.jpg" />
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://wikitok.cloud/" />
+
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
-    <link rel="shortcut icon" href="/favicon.ico" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-    <meta name="apple-mobile-web-app-title" content="WikiTok" />
-    <link rel="manifest" href="manifest.json" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-    <title>WikiTok</title>
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "WikiTok",
+        "description": "A TikTok-style interface for exploring Wikipedia articles in multiple languages",
+        "url": "https://wikitok.cloud/",
+        "applicationCategory": "EducationalApplication",
+        "operatingSystem": "Any",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "featureList": [
+          "Vertical scrolling feed of random Wikipedia articles",
+          "Support for multiple languages",
+          "Article previews with images",
+          "Share functionality",
+          "Bookmark favorite articles",
+          "Progressive Web App (PWA) support"
+        ]
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

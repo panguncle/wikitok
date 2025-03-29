@@ -1,5 +1,5 @@
 import { useEffect, useRef, useCallback, useState } from "react";
-import { Loader2, Search, X, Download, Sun, Moon, Laptop, Heart } from "lucide-react";
+import { Loader2, Search, X, Download, Heart } from "lucide-react";
 import { Analytics } from "@vercel/analytics/react";
 import { LanguageSelector } from "./components/LanguageSelector";
 import { useLikedArticles } from "./contexts/LikedArticlesContext";
@@ -7,8 +7,8 @@ import { useWikiArticles } from "./hooks/useWikiArticles";
 import { EnhancedWikiCard } from "./components/EnhancedWikiCard";
 import { SearchBar } from "./components/SearchBar";
 import { useTheme } from "./contexts/ThemeContext";
-import { Menu } from "@headlessui/react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from 'react-i18next';
 
 function App() {
   const [showLikes, setShowLikes] = useState(false);
@@ -17,9 +17,10 @@ function App() {
   const [selectedArticle, setSelectedArticle] = useState<any>(null);
   const { articles, loading, fetchArticles, searchArticles, setArticles } = useWikiArticles();
   const { likedArticles, toggleLike, isLiked } = useLikedArticles();
-  const { theme, setTheme, isDark } = useTheme();
+  const { isDark } = useTheme();
   const observerTarget = useRef(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const { t } = useTranslation();
 
   const handleObserver = useCallback(
     (entries: IntersectionObserverEntry[]) => {
@@ -87,7 +88,7 @@ function App() {
           onClick={() => window.location.reload()}
           className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-black'} drop-shadow-lg hover:opacity-80 transition-opacity`}
         >
-          WikiTok
+          {t('app.title')}
         </button>
         <button
           onClick={() => setShowSearch(true)}
@@ -96,7 +97,7 @@ function App() {
           } text-sm transition-colors flex items-center gap-2`}
         >
           <Search className="w-4 h-4" />
-          Search
+          {t('app.search.button')}
         </button>
       </div>
 
@@ -119,8 +120,8 @@ function App() {
           className={`w-12 h-12 ${
             isDark ? 'bg-black/70' : 'bg-white/90'
           } backdrop-blur-md shadow-lg flex items-center justify-center transition-all hover:scale-110`}
-          aria-label="Like Current Article"
-          title="Like Current Article"
+          aria-label={t('app.actions.like')}
+          title={selectedArticle && isLiked(selectedArticle.pageid) ? t('app.actions.unlike') : t('app.actions.like')}
         >
           <Heart 
             className={`w-5 h-5 ${selectedArticle && isLiked(selectedArticle.pageid) ? 'fill-current' : ''}`}
@@ -132,8 +133,8 @@ function App() {
           className={`w-12 h-12 rounded-b-full ${
             isDark ? 'bg-black/70' : 'bg-white/90'
           } backdrop-blur-md shadow-lg flex items-center justify-center transition-all hover:scale-110`}
-          aria-label="View Saved Articles"
-          title="View Saved Articles"
+          aria-label={t('app.actions.viewSaved')}
+          title={t('app.actions.viewSaved')}
         >
           <svg 
             xmlns="http://www.w3.org/2000/svg" 
@@ -167,17 +168,17 @@ function App() {
             </button>
 
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold">Liked Articles</h2>
+              <h2 className="text-xl font-bold">{t('app.likes.title')}</h2>
               {likedArticles.length > 0 && (
                 <button
                   onClick={handleExport}
                   className={`flex items-center gap-2 px-3 py-1.5 text-sm ${
                     isDark ? 'bg-gray-800 hover:bg-gray-700' : 'bg-gray-200 hover:bg-gray-300'
                   } rounded-lg transition-colors`}
-                  title="Export liked articles"
+                  title={t('app.likes.export')}
                 >
                   <Download className="w-4 h-4" />
-                  Export
+                  {t('app.likes.export')}
                 </button>
               )}
             </div>
@@ -187,7 +188,7 @@ function App() {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search liked articles..."
+                placeholder={t('app.likes.searchPlaceholder')}
                 className={`w-full ${
                   isDark ? 'bg-gray-800 text-white' : 'bg-gray-100 text-black'
                 } px-4 py-2 pl-10 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500`}
@@ -198,7 +199,7 @@ function App() {
             <div className="flex-1 overflow-y-auto min-h-0">
               {filteredLikedArticles.length === 0 ? (
                 <p className={isDark ? 'text-white/70' : 'text-black/70'}>
-                  {searchQuery ? "No matches found." : "No liked articles yet."}
+                  {searchQuery ? t('app.search.noResults') : t('app.likes.empty')}
                 </p>
               ) : (
                 <div className="space-y-4">

@@ -1,0 +1,28 @@
+{
+  "app": {
+    "title": "WikiTok",
+    "search": {
+      "button": "搜索",
+      "placeholder": "搜索维基百科文章...",
+      "noResults": "未找到匹配结果。"
+    },
+    "article": {
+      "readMore": "阅读更多",
+      "showLess": "收起",
+      "viewOnWikipedia": "在维基百科中查看",
+      "showRelated": "显示相关文章",
+      "noRelated": "未找到相关文章。"
+    },
+    "likes": {
+      "title": "收藏文章",
+      "empty": "暂无收藏文章。",
+      "export": "导出",
+      "searchPlaceholder": "搜索收藏文章..."
+    },
+    "actions": {
+      "like": "收藏文章",
+      "unlike": "取消收藏",
+      "viewSaved": "查看收藏文章"
+    }
+  }
+} 

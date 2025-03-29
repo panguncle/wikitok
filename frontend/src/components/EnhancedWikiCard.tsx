@@ -1,21 +1,18 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronDown, ChevronUp } from 'lucide-react';
-import { useLikedArticles } from '../contexts/LikedArticlesContext';
 
 interface WikiArticle {
+  pageid: number;
   title: string;
   displaytitle: string;
   extract: string;
-  pageid: number;
-  url: string;
   thumbnail?: {
     source: string;
     width: number;
     height: number;
   };
-  language?: string;
-  categories?: string[];
+  url: string;
   related?: WikiArticle[];
 }
 
@@ -28,7 +25,6 @@ interface EnhancedWikiCardProps {
 export function EnhancedWikiCard({ article, onRelatedArticlesRequest, onArticleInView }: EnhancedWikiCardProps) {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [showFullContent, setShowFullContent] = useState(false);
-  const { toggleLike, isLiked } = useLikedArticles();
   const cardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -53,22 +49,13 @@ export function EnhancedWikiCard({ article, onRelatedArticlesRequest, onArticleI
     return () => observer.disconnect();
   }, [article, onArticleInView]);
 
-  const handleToggleLike = () => {
-    if (article && article.pageid) {
-      toggleLike(article as any);
-    }
-  };
-
-  const isArticleLiked = article && article.pageid ? isLiked(article.pageid) : false;
-
   return (
     <motion.div
       ref={cardRef}
-      className="h-screen w-full flex items-center justify-center snap-start relative overflow-hidden"
+      className="h-screen w-full snap-start snap-always relative overflow-hidden"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.5 }}
     >
       <div className="h-full w-full relative flex flex-col">
         {article.thumbnail ? (
