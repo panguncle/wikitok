@@ -27,16 +27,30 @@ Run the commands below in the `/frontend` folder.
 1. Install dependencies:
 
 ```bash
-bun install
+npm install
 ```
 
 2. Run development server:
 
 ```bash
-bun run dev
+npm run dev
 ```
 
 No backend required!
+
+## Deployment
+
+This project is configured for deployment on Vercel. To deploy:
+
+1. Fork this repository
+2. Create a new project on [Vercel](https://vercel.com)
+3. Connect your forked repository
+4. Vercel will automatically detect the configuration and deploy the project
+
+The deployment will:
+- Build the frontend from the `/frontend` directory
+- Serve the static files from `/frontend/dist`
+- Handle client-side routing properly
 
 ## Demo
 
